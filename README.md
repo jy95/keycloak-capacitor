@@ -7,7 +7,7 @@ library implements a lot of private methods, which are not accessible with custo
 implementations are required for custom adapters.
 
 There is an open discussion about implementing the capacitor adapter in the original library
-here: https://groups.google.com/g/keycloak-dev/c/_D62KbWTuvc/m/4-1EJ-68BAAJ
+here: https://github.com/keycloak/keycloak/issues/10174 
 
 Original (**v19.0.1**) Implementation:
 
@@ -27,7 +27,7 @@ Extensions:
 
 Adapter to use the system browser.
 
-<img src="/docs/demo.gif" height="350">
+<img src="https://github.com/jy95/keycloak-capacitor/raw/main/docs/demo.gif" height="350">
 
 ### Prerequisites
 
