@@ -90,7 +90,7 @@ inApp browser will be opened for the login/logout/register and account managemen
 1. Install package
 
 ````
-npm i keycloak-ionic
+npm i keycloak-capacitor
 ````
 
 2. Use it
