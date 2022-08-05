@@ -1665,7 +1665,7 @@ function Keycloak (config) {
                     }
                 },
 
-                Identifier: function(options) {
+                redirectUri: function(options) {
                     if (options && options.redirectUri) {
                         return options.redirectUri;
                     } else if (kc.redirectUri) {
@@ -1733,7 +1733,7 @@ function Keycloak (config) {
                     }
                 },
 
-                Identifier: function(options) {
+                redirectUri: function(options) {
                     if (options && options.redirectUri) {
                         return options.redirectUri;
                     } else if (kc.redirectUri) {

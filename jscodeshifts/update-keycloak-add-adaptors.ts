@@ -7,7 +7,7 @@ function generateAdapterCode(adapterKey: 'capacitor-native' | 'capacitor', api: 
     // redirectUri method
     const redirectUriMethod = j.property(
         "init",
-        j.identifier("Identifier"),
+        j.identifier("redirectUri"),
         j.functionExpression(
             null,
             [
