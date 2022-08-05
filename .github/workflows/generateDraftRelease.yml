@@ -34,4 +34,5 @@ jobs:
         cp keycloak/adapters/oidc/js/src/keycloak.js src/keycloak.js
         rm -rf keycloak
         npx jscodeshift -t update-keycloak.ts src/keycloak.js
+        npm version ${{ steps.keycloak-original.outputs.VERSION }} --git-tag-version false --allow-same-version true
         npm run build
