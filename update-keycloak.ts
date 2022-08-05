@@ -1,8 +1,8 @@
 import type { API, FileInfo } from 'jscodeshift';
 
-import updateAdaptersList from './update-keycloak-adapters-list';
-import initAdapators from './update-keycloak-loadAdapter';
-import addAdaptors from './update-keycloak-add-adaptors';
+import updateAdaptersList from "./jscodeshifts/update-keycloak-adaptersList";
+import initAdapators from "./jscodeshifts/update-keycloak-loadAdapter";
+import addAdaptors from "./jscodeshifts/update-keycloak-addAdaptors";
 
 export default function transformer(file : FileInfo, api : API, options) {
     const fixes = [updateAdaptersList, initAdapators, addAdaptors];

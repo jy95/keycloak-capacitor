@@ -70,6 +70,8 @@ function Keycloak (config) {
         } else {
             if (window.Cordova || window.cordova) {
                 adapter = loadAdapter('cordova');
+            } else if (window.Capacitor || window.capacitor) {
+                adapter = loadAdapter('capacitor-native');
             } else {
                 adapter = loadAdapter();
             }
