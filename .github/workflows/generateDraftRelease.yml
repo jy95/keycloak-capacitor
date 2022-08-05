@@ -32,5 +32,6 @@ jobs:
     - name: 🤖 Replace keycloak-js implementation
       run: |
         cp keycloak/adapters/oidc/js/src/keycloak.js src/keycloak.js
+        rm -rf keycloak
         npx jscodeshift -t update-keycloak.ts src/keycloak.js
         npm run build
