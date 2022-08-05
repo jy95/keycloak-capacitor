@@ -61,7 +61,7 @@ function Keycloak (config) {
         kc.authenticated = false;
 
         callbackStorage = createCallbackStorage();
-        var adapters = ['default', 'cordova', 'cordova-native', "capacitor", "capacitor-native"];
+        var adapters = ['default', 'cordova', 'cordova-native', 'capacitor', 'capacitor-native'];
 
         if (initOptions && adapters.indexOf(initOptions.adapter) > -1) {
             adapter = loadAdapter(initOptions.adapter);

@@ -16,8 +16,8 @@ export default function transformer(file: FileInfo, api: API) {
     )
     .find(j.ArrayExpression)
     .forEach(p => {
-      p.get("elements").push(j.stringLiteral("capacitor"));
-      p.get("elements").push(j.stringLiteral("capacitor-native"));
+      p.get("elements").push(j.stringLiteral('capacitor'));
+      p.get("elements").push(j.stringLiteral('capacitor-native'));
     })
     .toSource();
 }

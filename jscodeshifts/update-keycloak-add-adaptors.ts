@@ -649,7 +649,7 @@ function generateAdapterCode(adapterKey: 'capacitor-native' | 'capacitor', api: 
         j.binaryExpression(
             '==',
             j.identifier("type"),
-            j.literal(adapterKey)
+            j.stringLiteral(adapterKey)
         ),
         j.blockStatement([
             j.expressionStatement(
