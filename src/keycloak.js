@@ -1606,7 +1606,7 @@ function Keycloak (config) {
             }
         }
 
-        if (type == 'capacitor') {
+        if (type == "capacitor") {
             loginIframe.enable = false;
 
             return {
@@ -1614,7 +1614,7 @@ function Keycloak (config) {
                     var promise = createPromise();
                     var loginUrl = kc.createLoginUrl(options);
 
-                    const addUrlListener = window.Capacitor.Plugins.App.addListener('appUrlOpen', (data) => {
+                    const addUrlListener = window.Capacitor.Plugins.App.addListener("appUrlOpen", data => {
                         window.cordova.plugins.browsertab.close();
                         var oauth = parseCallback(data.url);
                         processCallback(oauth, promise);
@@ -1629,7 +1629,7 @@ function Keycloak (config) {
                     var promise = createPromise();
                     var logoutUrl = kc.createLogoutUrl(options);
 
-                    const addUrlListener = window.Capacitor.Plugins.App.addListener('appUrlOpen', (data) => {
+                    const addUrlListener = window.Capacitor.Plugins.App.addListener("appUrlOpen", data => {
                         window.cordova.plugins.browsertab.close();
                         kc.clearToken();
                         promise.setSuccess();
@@ -1640,22 +1640,25 @@ function Keycloak (config) {
                     return promise.promise;
                 },
 
-                register : function(options) {
+                register: function(options) {
                     var promise = createPromise();
                     var registerUrl = kc.createRegisterUrl(options);
-                    window.Capacitor.Plugins.App.addListener('appUrlOpen', (data) => {
+
+                    const addUrlListener = window.Capacitor.Plugins.App.addListener("appUrlOpen", data => {
                         window.cordova.plugins.browsertab.close();
                         var oauth = parseCallback(data.url);
                         processCallback(oauth, promise);
+                        addUrlListener.remove();
                     });
+
                     window.cordova.plugins.browsertab.openUrl(registerUrl);
                     return promise.promise;
-
                 },
 
-                accountManagement : function() {
+                accountManagement: function() {
                     var accountUrl = kc.createAccountUrl();
-                    if (typeof accountUrl !== 'undefined') {
+
+                    if (typeof accountUrl !== "undefined") {
                         window.cordova.plugins.browsertab.openUrl(accountUrl);
                     } else {
                         throw "Not supported by the OIDC server";
@@ -1671,10 +1674,10 @@ function Keycloak (config) {
                         return "http://localhost";
                     }
                 }
-            }
+            };
         }
 
-        if (type == 'capacitor-native') {
+        if (type == "capacitor-native") {
             loginIframe.enable = false;
 
             return {
@@ -1682,13 +1685,13 @@ function Keycloak (config) {
                     var promise = createPromise();
                     var loginUrl = kc.createLoginUrl(options);
 
-                    const addUrlListener = window.Capacitor.Plugins.App.addListener('appUrlOpen', (data) => {
+                    const addUrlListener = window.Capacitor.Plugins.App.addListener("appUrlOpen", data => {
                         var oauth = parseCallback(data.url);
                         processCallback(oauth, promise);
                         addUrlListener.remove();
                     });
 
-                    window.open(loginUrl,'_system');
+                    window.open(loginUrl, "_system");
                     return promise.promise;
                 },
 
@@ -1696,32 +1699,35 @@ function Keycloak (config) {
                     var promise = createPromise();
                     var logoutUrl = kc.createLogoutUrl(options);
 
-                    const addUrlListener = window.Capacitor.Plugins.App.addListener('appUrlOpen', (data) => {
+                    const addUrlListener = window.Capacitor.Plugins.App.addListener("appUrlOpen", data => {
                         kc.clearToken();
                         promise.setSuccess();
                         addUrlListener.remove();
                     });
 
-                    window.open(logoutUrl,'_system');
+                    window.open(logoutUrl, "_system");
                     return promise.promise;
                 },
 
-                register : function(options) {
+                register: function(options) {
                     var promise = createPromise();
                     var registerUrl = kc.createRegisterUrl(options);
-                    window.Capacitor.Plugins.App.addListener('appUrlOpen', (data) => {
+
+                    const addUrlListener = window.Capacitor.Plugins.App.addListener("appUrlOpen", data => {
                         var oauth = parseCallback(data.url);
                         processCallback(oauth, promise);
+                        addUrlListener.remove();
                     });
-                    window.open(registerUrl,'_system');
-                    return promise.promise;
 
+                    window.open(registerUrl, "_system");
+                    return promise.promise;
                 },
 
-                accountManagement : function() {
+                accountManagement: function() {
                     var accountUrl = kc.createAccountUrl();
-                    if (typeof accountUrl !== 'undefined') {
-                        window.open(accountUrl,'_system');
+
+                    if (typeof accountUrl !== "undefined") {
+                        window.open(accountUrl, "_system");
                     } else {
                         throw "Not supported by the OIDC server";
                     }
@@ -1736,7 +1742,7 @@ function Keycloak (config) {
                         return "http://localhost";
                     }
                 }
-            }
+            };
         }
 
         throw 'invalid adapter type: ' + type;
