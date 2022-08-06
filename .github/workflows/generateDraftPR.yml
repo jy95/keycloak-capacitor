@@ -42,6 +42,7 @@ jobs:
         rm -rf keycloak
         npx jscodeshift -t update-keycloak.ts src/keycloak.js
         npx jscodeshift -t update-adapterTypes.ts keycloak.d.ts
+        npm install
         npm version ${{ steps.keycloak-original.outputs.VERSION }} --git-tag-version false --allow-same-version true
         npm run build
     - name: Create Pull Request
