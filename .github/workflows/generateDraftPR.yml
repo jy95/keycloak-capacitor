@@ -38,8 +38,10 @@ jobs:
     - name: 🤖 Replace keycloak-js implementation
       run: |
         cp -a keycloak/adapters/oidc/js/src/. src/
+        cp -a keycloak/adapters/oidc/js/dist/. dist/
         rm -rf keycloak
         npx jscodeshift -t update-keycloak.ts src/keycloak.js
+        npx jscodeshift -t update-adapterTypes.ts keycloak.d.ts
         npm version ${{ steps.keycloak-original.outputs.VERSION }} --git-tag-version false --allow-same-version true
         npm run build
     - name: Create Pull Request
