@@ -1,0 +1,60 @@
+name: Generate draft pull request
+
+on:
+  schedule:
+    # Each day at 5:00PM
+    - cron: '0 17 * * *'
+  # Trigger fetch on demand
+  repository_dispatch:
+    types: [generate-draft-pr]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🛎️ Checkout
+      uses: actions/checkout@v3
+    - name: 🔨 Use Node.js 18.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: 'npm'
+    - name: 🚧 Installation
+      run: npm ci
+    - name: 👀 Retrieve Keycloak-js version
+      run: |
+        echo "::set-output name=VERSION::$(npm view keycloak-js version)"
+      id: keycloak-original
+    - name: 📥 Git clone Keycloak-js@${{ steps.keycloak-original.outputs.VERSION }}
+      run: |
+        git clone -b ${{ steps.keycloak-original.outputs.VERSION }}  --depth 1  https://github.com/keycloak/keycloak.git
+    - name: Get Keycloak last commit ID
+      run: |
+        cd keycloak
+        echo "::set-output name=COMMIT_ID::$(git rev-parse HEAD)"
+        cd ..
+      id: keycloak-repo
+    - name: 🤖 Replace keycloak-js implementation
+      run: |
+        cp keycloak/adapters/oidc/js/src/keycloak.js src/keycloak.js
+        rm -rf keycloak
+        npx jscodeshift -t update-keycloak.ts src/keycloak.js
+        npm version ${{ steps.keycloak-original.outputs.VERSION }} --git-tag-version false --allow-same-version true
+        npm run build
+    - name: Create Pull Request
+      id: cpr
+      uses: peter-evans/create-pull-request@v4.0.4
+      with:
+        commit-message: "[auto-updater] update Keycloak to ${{ steps.keycloak-original.outputs.VERSION }}"
+        branch: "keycloak/${{ steps.keycloak-original.outputs.VERSION }}"
+        title: "Update Keycloak.js to ${{ steps.keycloak-original.outputs.VERSION }}"
+        body: |
+          Checklist before release : 
+          - Pull latest version of Keycloak-js ✅
+          - Add automatically the 2 Capacitor adapters ✅
+          - Update keycloak-capacitor version to ${{ steps.keycloak-original.outputs.VERSION }} ✅
+          - Review other changes (package.json, ...) 🤷
+
+          [Original repository](https://github.com/keycloak/keycloak/tree/${{ steps.keycloak-repo.outputs.COMMIT_ID }}/adapters/oidc/js)
+        draft: true
