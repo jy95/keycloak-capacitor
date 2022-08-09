@@ -21,7 +21,6 @@ function getAllDependancies(root: Collection<any>, api: API, options : {
             j.Property,
             searchCriteriaDeps
         )
-        // Replace dependencies
         .find(
             j.Property,
             {
@@ -78,8 +77,11 @@ export default function transformer(file: FileInfo, api: API, options : {
             }
         )
         .find(j.ObjectExpression)
-        .replaceWith((_) => j.objectExpression(
-            newProperties
-        ))
+        .replaceWith((nodePath) => {
+            const { node } = nodePath;
+            // replace properties
+            node.properties = newProperties;
+            return node;
+        })
         .toSource({ quote: "double" });
 }
