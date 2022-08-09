@@ -1,14 +1,12 @@
-import type { API, FileInfo } from 'jscodeshift';
+import type { API, FileInfo, Collection } from 'jscodeshift';
 
 // Get all dependancies for a given type
-function getAllDependancies(file: FileInfo, api: API, options : {
-    type: "dependencies" | "devDependencies",
-    originalKeycloakPath: string
+function getAllDependancies(root: Collection<any>, api: API, options : {
+    type: "dependencies" | "devDependencies"
 }) : {
     [key: string]: string
 } {
     const j = api.jscodeshift;
-    const root = j(file.source);
 
     // To find out the object containing the dependancies
     const searchCriteriaDeps = {
@@ -44,24 +42,23 @@ function getAllDependancies(file: FileInfo, api: API, options : {
 
 export default function transformer(file: FileInfo, api: API, options : {
     type: "dependencies" | "devDependencies",
-    originalKeycloakPath: string,
+    originalKeycloakAST: any,
     [key: string]: any
 }) {
     const j = api.jscodeshift;
-    const root = j(file.source);
+    // AST
+    const mainRoot = j(file.source);
+    const originalKeycloak = j(options.originalKeycloakAST);
 
     // Fetch dependancies
-    const originalDeps = getAllDependancies(file, api, options);
-    const keycloakDeps = getAllDependancies({
-        path: "original_keycloak_package.json",
-        source: options.originalKeycloakPath
-    }, api, options);
+    const originalDeps = getAllDependancies(mainRoot, api, options);
+    const keycloakDeps = getAllDependancies(originalKeycloak, api, options);
 
     // merge dependancies
     const mergedDeps = Object.assign({}, originalDeps, keycloakDeps);
 
     // Replace dependancies
-    return root
+    return mainRoot
         .find(
             j.Property,
             {
