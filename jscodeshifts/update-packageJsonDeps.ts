@@ -1,4 +1,5 @@
 import type { API, FileInfo, Collection } from 'jscodeshift';
+export const parser = require('json-estree-ast');
 
 // Get all dependancies for a given type
 function getAllDependancies(root: Collection<any>, api: API, options : {
@@ -49,6 +50,7 @@ export default function transformer(file: FileInfo, api: API, options : {
     // AST
     const mainRoot = j(file.source);
     const originalKeycloak = j(options.originalKeycloakAST);
+    // npx jscodeshift -t update-packageJson.ts __testfixtures__/update-packageJson.input.json -originalKeycloakPath __testfixtures__/update-packageJson.input2.json  -d -p
 
     // Fetch dependancies
     const originalDeps = getAllDependancies(mainRoot, api, options);
@@ -56,6 +58,14 @@ export default function transformer(file: FileInfo, api: API, options : {
 
     // merge dependancies
     const mergedDeps = Object.assign({}, originalDeps, keycloakDeps);
+    const newProperties = Object
+        .entries(mergedDeps)
+        .map( ([key, value]) => j.property(
+            "init",
+            j.identifier(key),
+            j.literal(value)
+        ))
+    console.log("ORIGINAL " + options.type)
 
     // Replace dependancies
     return mainRoot
@@ -67,20 +77,9 @@ export default function transformer(file: FileInfo, api: API, options : {
                 }
             }
         )
-        .replaceWith(
-            nodePath => {
-                const { node } = nodePath;
-                node.value = j.objectExpression(
-                    Object
-                        .entries(mergedDeps)
-                        .map( ([key, value]) => j.property(
-                            "init",
-                            j.identifier(key),
-                            j.literal(value)
-                        ))
-                );
-                return node;
-            }
-        )
-        .toSource();
+        .find(j.ObjectExpression)
+        .replaceWith((_) => j.objectExpression(
+            newProperties
+        ))
+        .toSource({ quote: "double" });
 }
