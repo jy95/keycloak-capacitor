@@ -1,5 +1,5 @@
 import type { API, FileInfo, Collection } from 'jscodeshift';
-export const parser = require('json-estree-ast');
+export const parser = require('momoa-estree-ast');
 
 // Get all dependancies for a given type
 function getAllDependancies(root: Collection<any>, api: API, options : {

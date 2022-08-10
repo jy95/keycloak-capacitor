@@ -1,7 +1,7 @@
 import type { API, FileInfo } from 'jscodeshift';
 import * as fs from 'fs';
 import { basename } from 'path';
-const { parse } = require('json-estree-ast');
+const { parse } = require('momoa-estree-ast');
 
 import updatePackageJsonDeps from "./jscodeshifts/update-packageJsonDeps";
 
@@ -31,4 +31,4 @@ export default function transformer(file : FileInfo, api : API, options) {
     return src;
 };
 
-export const parser = require('json-estree-ast');
+export const parser = require('momoa-estree-ast');
