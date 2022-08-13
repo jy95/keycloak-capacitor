@@ -1,0 +1,46 @@
+{
+   "name":"keycloak-capacitor",
+   "version":"19.0.1",
+   "description":"Keycloak adapter for Ionicframework with Capacitor support.",
+   "main":"dist/keycloak.js",
+   "module":"dist/keycloak.mjs",
+   "types":"dist/keycloak.d.ts",
+   "files":[
+      "dist"
+   ],
+   "scripts":{
+      "build":"rollup --config --configPlugin typescript",
+      "prepublishOnly":"npm run build",
+      "test":"npx jest"
+   },
+   "repository":{
+      "type":"git",
+      "url":"git+https://github.com/jy95/keycloak-capacitor.git"
+   },
+   "keywords":[
+      "capacitor",
+      "adapter",
+      "auth",
+      "authentication",
+      "oauth2",
+      "openid",
+      "keycloak"
+   ],
+   "devDependencies":{
+      "es6-promise":"^4.2.8",
+      "jest":"^28.1.3",
+      "jscodeshift":"^0.13.1",
+      "tslib":"^2.4.0",
+      "typescript":"^4.5.5"
+   },
+   "dependencies":{
+      "base64-js":"^1.5.1",
+      "js-sha256":"^0.9.0"
+   },
+   "author":"jy95",
+   "license":"Apache-2.0",
+   "bugs":{
+      "url":"https://github.com/jy95/keycloak-capacitor/issues"
+   },
+   "homepage":"https://github.com/jy95/keycloak-capacitor#readme"
+}
