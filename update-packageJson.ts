@@ -1,34 +1,64 @@
-import type { API, FileInfo } from 'jscodeshift';
-import * as fs from 'fs';
-import { basename } from 'path';
-const { parse } = require('momoa-estree-ast');
+#!/usr/bin/env ts-node
 
-import updatePackageJsonDeps from "./jscodeshifts/update-packageJsonDeps";
+import { readFile, writeFile } from 'fs/promises';
 
-export default function transformer(file : FileInfo, api : API, options) {
-    const fixes = ["dependencies", "devDependencies"];
-    let src = file.source;
-    let secondInput = fs.readFileSync(options.originalKeycloakPath, "utf8");
-    const originalKeycloakAST = parse(
-        secondInput,
-        {
-            loc: true,
-            source: basename(options.originalKeycloakPath)
-        }
-    )
+async function toJSON(path : string) {
+    let payload = await readFile(path, "utf-8");
+    return JSON.parse(payload);
+}
 
-    fixes.forEach(dependanciesType => {
-        if (typeof(src) === "undefined") { return; }
-        const nextSrc = updatePackageJsonDeps({ ...file, source:src }, api, {
-            type: dependanciesType as "dependencies" | "devDependencies",
-            originalKeycloakAST: originalKeycloakAST
-        });
+type dependanciesType = "dependencies" | "devDependencies";
 
-        if (nextSrc) {
-            src = nextSrc;
-        }
-    });
-    return src;
-};
+// Find all dependancies of given type
+function getAllDependancies(packageJson : { [x: string]: any }, type: dependanciesType) : {[x: string]: string} {
+    return Object
+        .entries(
+            packageJson[type] || {}
+        )
+        .reduce(
+            (acc, [name, version]) => {
+                acc[name] = version;
+                return acc;
+            },
+            {}
+        )
+}
 
-export const parser = require('momoa-estree-ast');
+export async function updateDependancies(forkPackage: string, keycloakPackage: string) {
+    try {
+        // read files
+        let current = await toJSON(forkPackage);
+        let original = await toJSON(keycloakPackage);
+
+        // Begin processing
+        let dependanciesList : dependanciesType[] = ['dependencies', 'devDependencies']
+        let newDependancies : {
+            [x in dependanciesType] : {[x: string] : string}
+        } = dependanciesList.reduce( 
+            (acc, depType) => {
+
+            // Fetch dependancies
+            const originalDeps = getAllDependancies(current, depType);
+            const keycloakDeps = getAllDependancies(original, depType);
+
+            // merge dependancies
+            acc[depType] = Object.assign({}, originalDeps, keycloakDeps);
+            return acc;
+        }, {} as any);
+
+        // Update original file
+        let updatedJSON = Object.assign({}, current, newDependancies);
+
+        return Promise.resolve(updatedJSON);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+
+}
+
+export default async function main() {
+    const myArguments = process.argv.slice(2);
+    const [forkPackage, keycloakPackage] = myArguments;
+    const updatedJSON = await updateDependancies(forkPackage, keycloakPackage);
+    await writeFile(forkPackage, updatedJSON);
+}

@@ -39,6 +39,7 @@ jobs:
       run: |
         cp -a keycloak/adapters/oidc/js/src/. src/
         cp -a keycloak/adapters/oidc/js/dist/. dist/
+        npx ts-node update-packageJson.ts -- package.json keycloak/adapters/oidc/js/package.json
         rm -rf keycloak
         npx jscodeshift -t update-keycloak.ts src/keycloak.js
         npx jscodeshift -t update-adapterTypes.ts keycloak.d.ts
@@ -57,7 +58,8 @@ jobs:
           - Pull latest version of Keycloak-js ✅
           - Add automatically the 2 Capacitor adapters ✅
           - Update keycloak-capacitor version to ${{ steps.keycloak-original.outputs.VERSION }} ✅
-          - Review other changes (package.json, ...) 🤷
+          - Update package.json & refresh (dev)dependancies ✅
+          - Review other changes (testing of examples folder) 🤷
 
           [Original repository](https://github.com/keycloak/keycloak/tree/${{ steps.keycloak-repo.outputs.COMMIT_ID }}/adapters/oidc/js)
         draft: true
