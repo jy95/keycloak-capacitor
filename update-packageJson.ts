@@ -1,6 +1,4 @@
-#!/usr/bin/env ts-node
-
-import { readFile, writeFile } from 'fs/promises';
+import { readFile } from 'fs/promises';
 
 async function toJSON(path : string) {
     let payload = await readFile(path, "utf-8");
@@ -54,11 +52,4 @@ export async function updateDependancies(forkPackage: string, keycloakPackage: s
         return Promise.reject(error);
     }
 
-}
-
-export default async function main() {
-    const myArguments = process.argv.slice(2);
-    const [forkPackage, keycloakPackage] = myArguments;
-    const updatedJSON = await updateDependancies(forkPackage, keycloakPackage);
-    await writeFile(forkPackage, updatedJSON);
 }

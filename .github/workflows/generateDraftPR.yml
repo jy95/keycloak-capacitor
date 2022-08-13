@@ -39,7 +39,7 @@ jobs:
       run: |
         cp -a keycloak/adapters/oidc/js/src/. src/
         cp -a keycloak/adapters/oidc/js/dist/. dist/
-        npx ts-node update-packageJson.ts -- package.json keycloak/adapters/oidc/js/package.json
+        npx ts-node update-packageJsonScript.ts -- package.json keycloak/adapters/oidc/js/package.json
         rm -rf keycloak
         npx jscodeshift -t update-keycloak.ts src/keycloak.js
         npx jscodeshift -t update-adapterTypes.ts keycloak.d.ts
