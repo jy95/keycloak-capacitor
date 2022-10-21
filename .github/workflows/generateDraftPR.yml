@@ -24,7 +24,7 @@ jobs:
       run: npm ci
     - name: 👀 Retrieve Keycloak-js version
       run: |
-        echo "::set-output name=VERSION::$(npm view keycloak-js version)"
+        echo "VERSION=$(npm view keycloak-js version)" >> $GITHUB_OUTPUT
       id: keycloak-original
     - name: 📥 Git clone Keycloak-js@${{ steps.keycloak-original.outputs.VERSION }}
       run: |
@@ -32,7 +32,7 @@ jobs:
     - name: Get Keycloak last commit ID
       run: |
         cd keycloak
-        echo "::set-output name=COMMIT_ID::$(git rev-parse HEAD)"
+        echo "COMMIT_ID=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
         cd ..
       id: keycloak-repo
     - name: 🤖 Replace keycloak-js implementation
