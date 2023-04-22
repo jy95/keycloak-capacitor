@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      KEYCLOAK_VERSION: ${{ !github.event.inputs.keycloak_version && "$(npm view keycloak-js version)" || github.event.inputs.keycloak_version }}
+      KEYCLOAK_VERSION: ${{ github.event.inputs.keycloak_version || '' }}
     steps:
     - name: 🛎️ Checkout
       uses: actions/checkout@v3
@@ -27,6 +27,10 @@ jobs:
         cache: 'npm'
     - name: 🚧 Installation
       run: npm ci
+    - name: 👀 Retrieve Keycloak-js version
+      if: ${{ env.KEYCLOAK_VERSION == '' }}
+      run: |
+        export KEYCLOAK_VERSION=$(npm view keycloak-js version)
     - name: 📥 Git clone Keycloak-js@$KEYCLOAK_VERSION
       run: |
         git clone -b $KEYCLOAK_VERSION  --depth 1  https://github.com/keycloak/keycloak.git
