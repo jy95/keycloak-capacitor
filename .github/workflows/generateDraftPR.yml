@@ -13,10 +13,28 @@ on:
         description: "Overwrite keycloak version to use"
         required: false
 jobs:
+  detect_version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 👀 Retrieve Keycloak-js version
+        if: ${{ github.event.inputs.keycloak_version == '' }}
+        run: |
+          echo "KEYCLOAK_VERSION=$(npm view keycloak-js version)" >> $GITHUB_OUTPUT
+      - name: 🔨 Use Node.js 18.x
+        if: ${{ github.event.inputs.keycloak_version != '' }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: 📨 Use provided Keycloak-js version
+        if: ${{ github.event.inputs.keycloak_version != '' }}
+        run: |
+          echo "KEYCLOAK_VERSION=${{ github.event.inputs.keycloak_version }}" >> $GITHUB_OUTPUT
   build:
     runs-on: ubuntu-latest
+    needs: detect_version
     env:
-      KEYCLOAK_VERSION: ${{ github.event.inputs.keycloak_version || '' }}
+      KEYCLOAK_VERSION: "${{ needs.detect_version.outputs.KEYCLOAK_VERSION }}"
     steps:
     - name: 🛎️ Checkout
       uses: actions/checkout@v3
@@ -27,10 +45,6 @@ jobs:
         cache: 'npm'
     - name: 🚧 Installation
       run: npm ci
-    - name: 👀 Retrieve Keycloak-js version
-      if: ${{ env.KEYCLOAK_VERSION == '' }}
-      run: |
-        echo "KEYCLOAK_VERSION=$(npm view keycloak-js version)" >> $GITHUB_OUTPUT
     - name: 📥 Git clone Keycloak-js@${{ env.KEYCLOAK_VERSION }}
       run: |
         git clone -b ${{ env.KEYCLOAK_VERSION }}  --depth 1  https://github.com/keycloak/keycloak.git
