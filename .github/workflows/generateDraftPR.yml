@@ -8,10 +8,15 @@ on:
   repository_dispatch:
     types: [generate-draft-pr]
   workflow_dispatch:
-
+    inputs:
+      keycloak_version:
+        description: "Overwrite keycloak version to use"
+        required: false
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      KEYCLOAK_VERSION: ${{ !inputs.keycloak_version && `$(npm view keycloak-js version)` || inputs.keycloak_version }}
     steps:
     - name: 🛎️ Checkout
       uses: actions/checkout@v3
@@ -22,13 +27,9 @@ jobs:
         cache: 'npm'
     - name: 🚧 Installation
       run: npm ci
-    - name: 👀 Retrieve Keycloak-js version
+    - name: 📥 Git clone Keycloak-js@$KEYCLOAK_VERSION
       run: |
-        echo "VERSION=$(npm view keycloak-js version)" >> $GITHUB_OUTPUT
-      id: keycloak-original
-    - name: 📥 Git clone Keycloak-js@${{ steps.keycloak-original.outputs.VERSION }}
-      run: |
-        git clone -b ${{ steps.keycloak-original.outputs.VERSION }}  --depth 1  https://github.com/keycloak/keycloak.git
+        git clone -b $KEYCLOAK_VERSION  --depth 1  https://github.com/keycloak/keycloak.git
     - name: Get Keycloak last commit ID
       run: |
         cd keycloak
@@ -44,20 +45,20 @@ jobs:
         npx jscodeshift -t update-keycloak.ts src/keycloak.js
         npx jscodeshift -t update-adapterTypes.ts dist/keycloak.d.ts
         npm install
-        npm version ${{ steps.keycloak-original.outputs.VERSION }} --git-tag-version false --allow-same-version true
+        npm version $KEYCLOAK_VERSION --git-tag-version false --allow-same-version true
         npm run build
     - name: Create Pull Request
       id: cpr
       uses: peter-evans/create-pull-request@v4.0.4
       with:
-        commit-message: "[auto-updater] update Keycloak to ${{ steps.keycloak-original.outputs.VERSION }}"
-        branch: "keycloak/${{ steps.keycloak-original.outputs.VERSION }}"
-        title: "Update Keycloak.js to ${{ steps.keycloak-original.outputs.VERSION }}"
+        commit-message: "[auto-updater] update Keycloak to $KEYCLOAK_VERSION"
+        branch: "keycloak/$KEYCLOAK_VERSION"
+        title: "Update Keycloak.js to $KEYCLOAK_VERSION"
         body: |
           Checklist before release : 
           - Pull latest version of Keycloak-js ✅
           - Add automatically the 2 Capacitor adapters ✅
-          - Update keycloak-capacitor version to ${{ steps.keycloak-original.outputs.VERSION }} ✅
+          - Update keycloak-capacitor version to $KEYCLOAK_VERSION ✅
           - Update package.json & refresh (dev)dependancies ✅
           - Review other changes (testing of examples folder) 🤷
 
