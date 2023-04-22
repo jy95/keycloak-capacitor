@@ -20,6 +20,9 @@ jobs:
         if: ${{ github.event.inputs.keycloak_version != '' }}
         run: |
           echo "KEYCLOAK_VERSION=${{ github.event.inputs.keycloak_version }}" >> $GITHUB_OUTPUT
+      - name: 🛎️ Checkout
+        if: ${{ github.event.inputs.keycloak_version == '' }}
+        uses: actions/checkout@v3
       - name: 🔨 Use Node.js 18.x
         if: ${{ github.event.inputs.keycloak_version == '' }}
         uses: actions/setup-node@v3
