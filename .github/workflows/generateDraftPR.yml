@@ -16,20 +16,20 @@ jobs:
   detect_version:
     runs-on: ubuntu-latest
     steps:
-      - name: 👀 Retrieve Keycloak-js version
-        if: ${{ github.event.inputs.keycloak_version == '' }}
-        run: |
-          echo "KEYCLOAK_VERSION=$(npm view keycloak-js version)" >> $GITHUB_OUTPUT
-      - name: 🔨 Use Node.js 18.x
-        if: ${{ github.event.inputs.keycloak_version != '' }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
       - name: 📨 Use provided Keycloak-js version
         if: ${{ github.event.inputs.keycloak_version != '' }}
         run: |
           echo "KEYCLOAK_VERSION=${{ github.event.inputs.keycloak_version }}" >> $GITHUB_OUTPUT
+      - name: 🔨 Use Node.js 18.x
+        if: ${{ github.event.inputs.keycloak_version == '' }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: 👀 Retrieve Keycloak-js version
+        if: ${{ github.event.inputs.keycloak_version == '' }}
+        run: |
+          echo "KEYCLOAK_VERSION=$(npm view keycloak-js version)" >> $GITHUB_OUTPUT
   build:
     runs-on: ubuntu-latest
     needs: detect_version
