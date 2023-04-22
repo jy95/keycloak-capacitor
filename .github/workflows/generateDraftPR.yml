@@ -30,7 +30,7 @@ jobs:
     - name: 👀 Retrieve Keycloak-js version
       if: ${{ env.KEYCLOAK_VERSION == '' }}
       run: |
-        export KEYCLOAK_VERSION=$(npm view keycloak-js version)
+        echo "KEYCLOAK_VERSION=$(npm view keycloak-js version)" >> $GITHUB_OUTPUT
     - name: 📥 Git clone Keycloak-js@${{ env.KEYCLOAK_VERSION }}
       run: |
         git clone -b ${{ env.KEYCLOAK_VERSION }}  --depth 1  https://github.com/keycloak/keycloak.git
@@ -48,9 +48,11 @@ jobs:
         rm -rf keycloak
         npx jscodeshift -t update-keycloak.ts src/keycloak.js
         npx jscodeshift -t update-adapterTypes.ts dist/keycloak.d.ts
+    - name: 💅 Prepare release
+      run: |
         npm install
         npm version ${{ env.KEYCLOAK_VERSION }} --git-tag-version false --allow-same-version true
-        npm run build
+        npm run build  
     - name: Create Pull Request
       id: cpr
       uses: peter-evans/create-pull-request@v4.0.4
