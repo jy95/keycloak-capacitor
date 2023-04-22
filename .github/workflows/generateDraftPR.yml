@@ -31,9 +31,9 @@ jobs:
       if: ${{ env.KEYCLOAK_VERSION == '' }}
       run: |
         export KEYCLOAK_VERSION=$(npm view keycloak-js version)
-    - name: 📥 Git clone Keycloak-js@$KEYCLOAK_VERSION
+    - name: 📥 Git clone Keycloak-js@${{ env.KEYCLOAK_VERSION }}
       run: |
-        git clone -b $KEYCLOAK_VERSION  --depth 1  https://github.com/keycloak/keycloak.git
+        git clone -b ${{ env.KEYCLOAK_VERSION }}  --depth 1  https://github.com/keycloak/keycloak.git
     - name: Get Keycloak last commit ID
       run: |
         cd keycloak
@@ -49,20 +49,20 @@ jobs:
         npx jscodeshift -t update-keycloak.ts src/keycloak.js
         npx jscodeshift -t update-adapterTypes.ts dist/keycloak.d.ts
         npm install
-        npm version $KEYCLOAK_VERSION --git-tag-version false --allow-same-version true
+        npm version ${{ env.KEYCLOAK_VERSION }} --git-tag-version false --allow-same-version true
         npm run build
     - name: Create Pull Request
       id: cpr
       uses: peter-evans/create-pull-request@v4.0.4
       with:
-        commit-message: "[auto-updater] update Keycloak to $KEYCLOAK_VERSION"
-        branch: "keycloak/$KEYCLOAK_VERSION"
-        title: "Update Keycloak.js to $KEYCLOAK_VERSION"
+        commit-message: "[auto-updater] update Keycloak to ${{ env.KEYCLOAK_VERSION }}"
+        branch: "keycloak/${{ env.KEYCLOAK_VERSION }}"
+        title: "Update Keycloak.js to ${{ env.KEYCLOAK_VERSION }}"
         body: |
           Checklist before release : 
           - Pull latest version of Keycloak-js ✅
           - Add automatically the 2 Capacitor adapters ✅
-          - Update keycloak-capacitor version to $KEYCLOAK_VERSION ✅
+          - Update keycloak-capacitor version to ${{ env.KEYCLOAK_VERSION }} ✅
           - Update package.json & refresh (dev)dependancies ✅
           - Review other changes (testing of examples folder) 🤷
 
