@@ -42,9 +42,9 @@ jobs:
       id: keycloak-repo
     - name: 🤖 Replace keycloak-js implementation
       run: |
-        cp -a keycloak/adapters/oidc/js/src/. src/
-        cp -a keycloak/adapters/oidc/js/dist/. dist/
-        npx ts-node update-packageJsonScript.ts -- package.json keycloak/adapters/oidc/js/package.json
+        cp -a keycloak/js/libs/keycloak-js/src/. src/
+        cp -a keycloak/js/libs/keycloak-js/dist/. dist/
+        npx ts-node update-packageJsonScript.ts -- package.json keycloak/js/libs/keycloak-js/package.json
         rm -rf keycloak
         npx jscodeshift -t update-keycloak.ts src/keycloak.js
         npx jscodeshift -t update-adapterTypes.ts dist/keycloak.d.ts
@@ -66,5 +66,5 @@ jobs:
           - Update package.json & refresh (dev)dependancies ✅
           - Review other changes (testing of examples folder) 🤷
 
-          [Original repository](https://github.com/keycloak/keycloak/tree/${{ steps.keycloak-repo.outputs.COMMIT_ID }}/adapters/oidc/js)
+          [Original repository](https://github.com/keycloak/keycloak/tree/${{ steps.keycloak-repo.outputs.COMMIT_ID }}/js/libs/keycloak-js)
         draft: true
