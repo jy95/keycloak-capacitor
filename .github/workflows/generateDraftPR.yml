@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      KEYCLOAK_VERSION: ${{ !inputs.keycloak_version && `$(npm view keycloak-js version)` || inputs.keycloak_version }}
+      KEYCLOAK_VERSION: ${{ !inputs.keycloak_version && "$(npm view keycloak-js version)" || inputs.keycloak_version }}
     steps:
     - name: 🛎️ Checkout
       uses: actions/checkout@v3
