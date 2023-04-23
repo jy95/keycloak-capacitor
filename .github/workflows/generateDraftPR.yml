@@ -27,14 +27,18 @@ jobs:
           cache: 'npm'
       - name: 👀 Retrieve Keycloak-js version
         shell: bash
-        id: set_version
         run: |
-          if [[ -z "${{ github.event.inputs.keycloak_version }}" ]]; then
-            export KEYCLOAK_VERSION=$(npm view keycloak-js version)
-          else
-            export KEYCLOAK_VERSION=${{ github.event.inputs.keycloak_version }}
-          fi
+          if [[ -z "${{ github.event.inputs.keycloak_version }}" ]]; then 
+            export KEYCLOAK_VERSION=$(npm view keycloak-js version) 
+          else 
+            export KEYCLOAK_VERSION=${{ github.event.inputs.keycloak_version }} 
+          fi 
           echo "KEYCLOAK_VERSION=${KEYCLOAK_VERSION}" >> $GITHUB_ENV
+      - name: 📨 Set output value
+        id: set_version
+        shell: bash
+        run: | 
+          echo "KEYCLOAK_VERSION=${{ env.KEYCLOAK_VERSION }}" >> $GITHUB_OUTPUT
   build:
     runs-on: ubuntu-latest
     needs: detect_version
@@ -46,11 +50,14 @@ jobs:
       with:
         node-version: 18
         cache: 'npm'
+    - name: 🔨 Set Keycloak version
+      run: |
+        echo "KEYCLOAK_VERSION=${{ needs.detect_version.outputs.KEYCLOAK_VERSION }}" >> $GITHUB_ENV
     - name: 🚧 Installation
       run: npm ci
-    - name: 📥 Git clone Keycloak-js@${{ needs.detect_version.outputs.KEYCLOAK_VERSION }}
+    - name: 📥 Git clone Keycloak-js@$KEYCLOAK_VERSION
       run: |
-        git clone -b ${{ needs.detect_version.outputs.KEYCLOAK_VERSION }} --depth 1  https://github.com/keycloak/keycloak.git
+        git clone -b $KEYCLOAK_VERSION --depth 1  https://github.com/keycloak/keycloak.git
     - name: Get Keycloak last commit ID
       run: |
         cd keycloak
@@ -68,20 +75,20 @@ jobs:
     - name: 💅 Prepare release
       run: |
         npm install
-        npm version ${{ needs.detect_version.outputs.KEYCLOAK_VERSION }} --git-tag-version false --allow-same-version true
+        npm version $KEYCLOAK_VERSION --git-tag-version false --allow-same-version true
         npm run build  
     - name: Create Pull Request
       id: cpr
       uses: peter-evans/create-pull-request@v4.0.4
       with:
-        commit-message: "[auto-updater] update Keycloak to ${{ needs.detect_version.outputs.KEYCLOAK_VERSION }}"
-        branch: "keycloak/${{ needs.detect_version.outputs.KEYCLOAK_VERSION }}"
-        title: "Update Keycloak.js to ${{ needs.detect_version.outputs.KEYCLOAK_VERSION }}"
+        commit-message: "[auto-updater] update Keycloak to $KEYCLOAK_VERSION"
+        branch: "keycloak/$KEYCLOAK_VERSION"
+        title: "Update Keycloak.js to $KEYCLOAK_VERSION"
         body: |
           Checklist before release : 
           - Pull latest version of Keycloak-js ✅
           - Add automatically the 2 Capacitor adapters ✅
-          - Update keycloak-capacitor version to ${{ needs.detect_version.outputs.KEYCLOAK_VERSION }} ✅
+          - Update keycloak-capacitor version to $KEYCLOAK_VERSION ✅
           - Update package.json & refresh (dev)dependancies ✅
           - Review other changes (testing of examples folder) 🤷
 
