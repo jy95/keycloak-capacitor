@@ -7,8 +7,8 @@ async function main() {
     // 3 instead of 2 as I had to use -- to be use arguments are properly passed here
     const myArguments = process.argv.slice(3);
     const [forkPackage, keycloakPackage] = myArguments;
-    console.log("Bumping package.json");
     const updatedJSON = await updateDependancies(forkPackage, keycloakPackage);
+    console.log("Bumping package.json");
     await writeFile(forkPackage, JSON.stringify(updatedJSON, null, 4));
     console.log("Package.json updated")
 }

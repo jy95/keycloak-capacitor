@@ -28,6 +28,9 @@ export async function updateDependancies(forkPackage: string, keycloakPackage: s
         let current = await toJSON(forkPackage);
         let original = await toJSON(keycloakPackage);
 
+        console.log(current)
+        console.log(original)
+
         // Begin processing
         let dependanciesList : dependanciesType[] = ['dependencies', 'devDependencies']
         let newDependancies : {
