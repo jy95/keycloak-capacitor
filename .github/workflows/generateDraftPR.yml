@@ -12,6 +12,9 @@ on:
       keycloak_version:
         description: "Overwrite keycloak version to use"
         required: false
+      keycloak_branch:
+        description: "Specific branch to pull from Github"
+        required: false
 jobs:
   detect_version:
     runs-on: ubuntu-latest
@@ -53,11 +56,12 @@ jobs:
     - name: 🔨 Set Keycloak version
       run: |
         echo "KEYCLOAK_VERSION=${{ needs.detect_version.outputs.KEYCLOAK_VERSION }}" >> $GITHUB_ENV
+        echo "KEYCLOAK_BRANCH=${{ github.event.inputs.keycloak_branch || needs.detect_version.outputs.KEYCLOAK_VERSION }}" >> $GITHUB_ENV
     - name: 🚧 Installation
       run: npm ci
     - name: 📥 Git clone Keycloak-js@$KEYCLOAK_VERSION
       run: |
-        git clone -b $KEYCLOAK_VERSION --depth 1  https://github.com/keycloak/keycloak.git
+        git clone -b $KEYCLOAK_BRANCH --depth 1  https://github.com/keycloak/keycloak.git
     - name: Get Keycloak last commit ID
       run: |
         cd keycloak
