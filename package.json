@@ -1,6 +1,6 @@
 {
     "name": "keycloak-capacitor",
-    "version": "22.0.0",
+    "version": "22.0.5",
     "description": "Keycloak adapter for Ionicframework with Capacitor support.",
     "main": "dist/keycloak.js",
     "module": "dist/keycloak.mjs",
